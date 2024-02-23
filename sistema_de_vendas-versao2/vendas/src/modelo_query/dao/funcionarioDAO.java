@@ -9,9 +9,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+//import model.bean.Produto;
 import model.bean.funcionario;
 
 /**
@@ -71,5 +74,44 @@ public class funcionarioDAO {
         }finally{
             Banco.closeConnection(con, stmt);
         }
+    }
+    
+    public List<funcionario> read() {
+
+        Connection con = Banco.getConnection();
+        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        List<funcionario> funcionarios = new ArrayList<>();
+
+        try {
+            stmt = con.prepareStatement("SELECT * FROM funcionario");
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+
+                funcionario f = new funcionario();
+
+                f.setId(rs.getInt("idfuncionario"));
+                f.setNome(rs.getString("nome"));
+                f.setEmail(rs.getString("email"));
+                f.setLogin(rs.getString("login"));
+                f.setSenha(rs.getString("senha"));
+                /*produto.setDescricao(rs.getString("descricao"));
+                produto.setQtd(rs.getInt("qtd"));
+                produto.setPreco(rs.getDouble("preco"));
+                produto.add(produto);*/
+                funcionarios.add(f);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ProdutoDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            Banco.closeConnection(con, stmt, rs);
+        }
+
+        return funcionarios;
+
     }
 }
